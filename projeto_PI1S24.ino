@@ -32,6 +32,8 @@ bool publicacaoConcluida = false;
 HX711 scale;
 float medida = 0;
 
+
+
 //Objetos
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -170,20 +172,27 @@ void connect_test(){
 
 void send_mass(){
 
-  
+  char prefixo[] = {'m', 'a', 's', 's', 'a', ' ','\0'};
+
     if (client.connected()){
     
-    //Fazendo uma média de 3 medidas
+    //Fazendo uma média de 5 medidas
     medida = scale.get_units(5);
 
-    //Mostrando no serial, com 3 casas decimais
-    Serial.println(medida, 3);
+    char str_massa[20];
+    snprintf(str_massa, sizeof(str_massa), "%.3f", medida);
 
-    //Armazendo um float dentro de um array de char
+    strcat(prefixo,str_massa);
+
+   //Mostrando no serial, com 3 casas decimais
+    //Serial.println(prefixo);
+
+    
+    //Armazenando um float dentro de um array de char
     char buffer[20];
     sprintf(buffer, "%f", medida);
 
-    client.publish(topic, buffer);
+    client.publish(topic, prefixo);
   } else {
     Serial.println("erro no envio da mensagem!");
   }
